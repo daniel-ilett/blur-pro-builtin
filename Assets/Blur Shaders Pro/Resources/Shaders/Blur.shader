@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SnapshotPro/Blur"
+﻿Shader "Hidden/BlurShadersPro/Blur"
 {
 	HLSLINCLUDE
 	#include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"
@@ -24,7 +24,7 @@
 
 		Pass
 		{
-			Name "HorizontalPass"
+			Name "HorizontalGaussian"
 			HLSLPROGRAM
 
 			#pragma vertex VertDefault
@@ -58,7 +58,7 @@
 
 		Pass
 		{
-			Name "HorizontalPass"
+			Name "VerticalGaussian"
 			HLSLPROGRAM
 
 			#pragma vertex VertDefault
@@ -80,6 +80,71 @@
 					kernelSum += gauss;
 					uv = i.texcoord + float2(0.0f, _MainTex_TexelSize.y * y);
 					col += gauss * SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv).rgb;
+				}
+
+				col /= kernelSum;
+				return float4(col, 1.0f);
+			}
+
+			ENDHLSL
+		}
+
+		Pass
+		{
+			Name "HorizontalBox"
+			HLSLPROGRAM
+
+			#pragma vertex VertDefault
+			#pragma fragment FragHorizontal
+
+			float4 FragHorizontal(VaryingsDefault i) : SV_Target
+			{
+				float3 col = float3(0.0f, 0.0f, 0.0f);
+				float kernelSum = 0.0f;
+
+				int upper = ((_KernelSize - 1) / 2);
+				int lower = -upper;
+
+				float2 uv;
+
+				for (int x = lower; x <= upper; ++x)
+				{
+					kernelSum++;
+					uv = i.texcoord + float2(_MainTex_TexelSize.x * x, 0.0f);
+					col += SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv).rgb;
+				}
+
+				col /= kernelSum;
+
+				return float4(col, 1.0f);
+			}
+
+			ENDHLSL
+		}
+
+		Pass
+		{
+			Name "VerticalBox"
+			HLSLPROGRAM
+
+			#pragma vertex VertDefault
+			#pragma fragment FragVertical
+
+			float4 FragVertical(VaryingsDefault i) : SV_Target
+			{
+				float3 col = float3(0.0f, 0.0f, 0.0f);
+				float kernelSum = 0.0f;
+
+				int upper = ((_KernelSize - 1) / 2);
+				int lower = -upper;
+
+				float2 uv;
+
+				for (int y = lower; y <= upper; ++y)
+				{
+					kernelSum++;
+					uv = i.texcoord + float2(0.0f, _MainTex_TexelSize.y * y);
+					col += SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv).rgb;
 				}
 
 				col /= kernelSum;

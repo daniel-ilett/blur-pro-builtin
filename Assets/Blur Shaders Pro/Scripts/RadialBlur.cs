@@ -1,11 +1,11 @@
-﻿namespace SnapshotShaders.BuiltIn
+﻿namespace BlurShadersPro.BuiltIn
 {
     using System;
     using UnityEngine;
     using UnityEngine.Rendering.PostProcessing;
 
     [Serializable]
-    [PostProcess(typeof(RadialBlurRenderer), PostProcessEvent.AfterStack, "Snapshot Pro/RadialBlur")]
+    [PostProcess(typeof(RadialBlurRenderer), PostProcessEvent.AfterStack, "Blur Shaders Pro/RadialBlur")]
     public class RadialBlur : PostProcessEffectSettings
     {
         [Range(3, 500), Tooltip("Blur Strength. Higher values require more system resources.")]
@@ -19,7 +19,7 @@
     {
         public override void Render(PostProcessRenderContext context)
         {
-            var sheet = context.propertySheets.Get(Shader.Find("Hidden/SnapshotPro/RadialBlur"));
+            var sheet = context.propertySheets.Get(Shader.Find("Hidden/BlurShadersPro/RadialBlur"));
             sheet.properties.SetInt("_KernelSize", settings.strength);
             sheet.properties.SetFloat("_Spread", settings.strength / 7.5f);
             sheet.properties.SetFloat("_StepSize", settings.stepSize / 1000.0f);

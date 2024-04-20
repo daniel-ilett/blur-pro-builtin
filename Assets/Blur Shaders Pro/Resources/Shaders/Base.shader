@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SnapshotPro/Base"
+﻿Shader "Hidden/BlurShadersPro/Base"
 {
 	SubShader
 	{

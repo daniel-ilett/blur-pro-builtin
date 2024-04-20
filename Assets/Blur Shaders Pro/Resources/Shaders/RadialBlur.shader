@@ -1,4 +1,4 @@
-﻿Shader "Hidden/SnapshotPro/RadialBlur"
+﻿Shader "Hidden/BlurShadersPro/RadialBlur"
 {
 	HLSLINCLUDE
 	#include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"

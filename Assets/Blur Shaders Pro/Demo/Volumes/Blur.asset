@@ -33,3 +33,6 @@ MonoBehaviour:
   strength:
     overrideState: 1
     value: 101
+  blurType:
+    overrideState: 1
+    value: 1
