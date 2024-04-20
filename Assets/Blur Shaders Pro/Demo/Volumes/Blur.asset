@@ -35,4 +35,4 @@ MonoBehaviour:
     value: 101
   blurType:
     overrideState: 1
-    value: 1
+    value: 0
