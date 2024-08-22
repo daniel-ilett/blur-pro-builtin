@@ -8,8 +8,11 @@
     [PostProcess(typeof(BlurRenderer), PostProcessEvent.AfterStack, "Blur Shaders Pro/Blur")]
     public class Blur : PostProcessEffectSettings
     {
-        [Range(3, 500), Tooltip("Blur Strength")]
-        public IntParameter strength = new IntParameter { value = 5 };
+        [Range(1, 500), Tooltip("Blur Strength")]
+        public IntParameter strength = new IntParameter { value = 1 };
+
+        [Range(1, 16), Tooltip("Higher values will skip pixels during blur passes. Increase for better performance.")]
+        public IntParameter blurStepSize = new IntParameter { value = 1 };
 
         [Tooltip("Type of blur. Gaussian blur is slightly more expensive, but higher fidelity.")]
         public BlurTypeParameter blurType = new BlurTypeParameter { value = BlurType.Gaussian };
@@ -22,21 +25,25 @@
             var sheet = context.propertySheets.Get(Shader.Find("Hidden/BlurShadersPro/Blur"));
             sheet.properties.SetInt("_KernelSize", settings.strength);
             sheet.properties.SetFloat("_Spread", settings.strength / 7.5f);
+            sheet.properties.SetInteger("_BlurStepSize", settings.blurStepSize);
 
-            var tmp = RenderTexture.GetTemporary(Screen.width, Screen.height, 0);
-
-            if(settings.blurType == BlurType.Gaussian)
+            if(settings.strength > settings.blurStepSize * 2)
             {
-                context.command.BlitFullscreenTriangle(context.source, tmp, sheet, 0);
-                context.command.BlitFullscreenTriangle(tmp, context.destination, sheet, 1);
-            }
-            else if(settings.blurType == BlurType.Box)
-            {
-                context.command.BlitFullscreenTriangle(context.source, tmp, sheet, 2);
-                context.command.BlitFullscreenTriangle(tmp, context.destination, sheet, 3);
-            }
+                var tmp = RenderTexture.GetTemporary(Screen.width, Screen.height, 0);
 
-            RenderTexture.ReleaseTemporary(tmp);
+                if (settings.blurType == BlurType.Gaussian)
+                {
+                    context.command.BlitFullscreenTriangle(context.source, tmp, sheet, 0);
+                    context.command.BlitFullscreenTriangle(tmp, context.destination, sheet, 1);
+                }
+                else if (settings.blurType == BlurType.Box)
+                {
+                    context.command.BlitFullscreenTriangle(context.source, tmp, sheet, 2);
+                    context.command.BlitFullscreenTriangle(tmp, context.destination, sheet, 3);
+                }
+
+                RenderTexture.ReleaseTemporary(tmp);
+            }
         }
     }
 

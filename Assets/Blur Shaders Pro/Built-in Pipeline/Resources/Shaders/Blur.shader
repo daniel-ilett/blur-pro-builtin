@@ -7,6 +7,7 @@
 	float2 _MainTex_TexelSize;
 	uint _KernelSize;
 	float _Spread;
+	uint _BlurStepSize;
 
 	// Define Gaussian function constants.
 	static const float E = 2.71828f;
@@ -40,7 +41,7 @@
 
 				float2 uv;
 
-				for (int x = lower; x <= upper; ++x)
+				for (int x = lower; x <= upper; x += _BlurStepSize)
 				{
 					float gauss = gaussian(x);
 					kernelSum += gauss;
@@ -74,7 +75,7 @@
 
 				float2 uv;
 
-				for (int y = lower; y <= upper; ++y)
+				for (int y = lower; y <= upper; y += _BlurStepSize)
 				{
 					float gauss = gaussian(y);
 					kernelSum += gauss;
